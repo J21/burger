@@ -1,27 +1,47 @@
-var connection = require("./connection.js");
-
-// Object Relational Mapper (ORM)
+var connection = require('../config/connection.js');
 
 var orm = {
-  selectAll: function(tableInput, colToSearch, valOfCol) {
-    var queryString = "SELECT * FROM burgers_db";
-    connection.query(queryString, [tableInput, colToSearch, valOfCol], function(err, result) {
-      console.log(result);
-    });
-  },
-  insertOne: function(whatToSelect, table, orderCol) {
-    var queryString = "SELECT ?? FROM ?? ORDER BY cost DESCE";
-    console.log(queryString);
-    connection.query(queryString, [whatToSelect, table, orderCol], function(err, result) {
-      console.log(result);
-    });
-  },
-  updateOne: function(tableOneCol, tableTwoForeignKey, tableOne, tableTwo) {
-    var queryString = "SELECT ??, COUNT(??) AS count FROM ?? LEFT JOIN ?? ON ??.??= ??.id GROUP BY ?? ORDER BY count DESC LIMIT 1";
+    selectWhere: function(tableInput, colToSearch, valOfCol) {
+        var queryString = 'SELECT * FROM ' + tableInput + ' WHERE ' + colToSearch + ' = ?';
 
-    connection.query(queryString, [tableOneCol, tableOneCol, tableOne, tableTwo, tableTwo, tableTwoForeignKey, tableOne, tableOneCol], function(err, result) {
-      console.log(result);
+        connection.query(queryString, [valOfCol], function(err, result) {
+            return result;
+        });
+    },
+    selectAll: function (tableInput, cb) {
+    var queryString = 'SELECT * FROM ' + tableInput + ';';
+    
+    connection.query(queryString, function (err, result) {
+      if (err) throw err;
+      cb(result);
     });
+  },
+    insertOne: function (table, cols, vals, cb) {
+    var queryString = 'INSERT INTO ' + table + '(' + cols + ')' + "VALUES('" + [vals] + "')";
+    console.log(queryString);
+
+    connection.query(queryString, vals, function (err, result) {
+      if (err) throw err;
+      cb(result);
+    });
+  },
+    updateOne: function(table, col_name, burger_id, cb) {
+      var queryString = "UPDATE " + table + " SET " + col_name + "=1 " + "WHERE id=" + burger_id;
+      console.log(queryString);
+
+    connection.query(queryString, function(err, result) {
+      if (err) throw err;
+      cb(result);
+    })
+  },
+  deleteOne: function(table, burger_id, cb) {
+      var queryString = "DELETE FROM " + table + " WHERE id = " + burger_id;
+      console.log(queryString);
+
+    connection.query(queryString, function(err, result) {
+      if (err) throw err;
+      cb(result);
+    })
   }
 };
 

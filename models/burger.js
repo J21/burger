@@ -1,24 +1,38 @@
-var orm = require("../config/orm.js");
+//require ORM
+var orm = require('../config/orm.js');
 
+//object for export
 var burger = {
-  all: function(cb) {
-    orm.all("burgers", function(res) {
-      cb(res);
+  //this function is unnecessary.
+  selectWhere: function(burgerName,callback){
+    orm.selectWhere('burgers','burger_name' ,burgerName,function(returnData){
+      callback(returnData)
+    }); 
+  }, //end selectWhere
+  insertOne: function(column,name,callback){
+    //use orm function(table,col,name,callback). 
+    orm.insertOne('burgers',column,name, function(returnData){
+      //callback is passed as parameter when burger.insertOne is called in other file.
+      callback(returnData);
     });
+  },//end insertOne
+  selectAll: function(callback){
+    //select all function used to load display with DB data from table burgers.
+    orm.selectAll('burgers',function(returnData){
+      callback(returnData);
+    });
+  },//end selectAll
+  updateOne: function(table,column,id,callback){
+    orm.updateOne('burgers',column, id,function(returnData){
+      callback(returnData);
+    })
   },
-  create: function(name, cb) {
-    orm.create("burgers", [
-      "burger_name", "devoured"
-    ], [
-      name, false
-    ], cb);
-  },
-  update: function(id, cb) {
-    var condition = "id=" + id;
-    orm.update("burgers", {
-      devoured: true
-    }, condition, cb);
+  deleteOne: function(table,id,callback){
+    orm.deleteOne('burgers',id,function(returnData){
+      callback(returnData);
+    })
   }
-};
+}//end burger
+
 
 module.exports = burger;

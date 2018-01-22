@@ -6,11 +6,8 @@ var connection = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "Jonster21",
-  database: "burger_db"
+  database: "burgers_db"
 });
-
-// Make connection.
-var connection =mysql.createConnection(source.localhost);
 
 connection.connect(function(err) {
   if (err) {
