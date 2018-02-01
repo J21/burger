@@ -1,27 +1,25 @@
-//dependencies. Done as const just because I can
-const express = require('express');
-const methodOverride = require('method-override');
-const bodyParser = require('body-parser');
-const app = express();
+var express = require("express");
+var bodyParser = require("body-parser");
+var methodOverride = require("method-override");
 
-//serve up public folder and all content as static files to server.
-app.use(express.static('public'));
-//use bodyParser, do not encode url
-app.use(bodyParser.urlencoded({
-	extended: false
-}));
-// override with POST having ?_method=DELETE
+var PORT = process.env.PORT || 3307;
+var app = express();
+
+// Serve static content for the app from the "public" directory in the application directory.
+app.use(express.static("public"));
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(methodOverride('_method'));
-//require handlebars
-var exphbs = require('express-handlebars');
-//use handlebars engine as template engine, use 'main' as our base file
-app.engine('handlebars', exphbs({
-	defaultLayout: 'main'
-}));
-app.set('view engine', 'handlebars');
+var exphbs = require("express-handlebars");
 
-//link to burger controller, set as default page"/"
-var routes = require('./controllers/burger_controller.js');
-app.use('/', routes);
-//listen on port, if undefined, use 3000
-app.listen(process.env.PORT || 3000);
+app.engine("handlebars", exphbs({ defaultLayout: 'main' }));
+app.set("view engine", "handlebars");
+
+var routes = require("./controllers/burgersController.js");
+
+app.use(routes);
+
+app.listen(PORT, function() {
+  console.log("Listening on port:%s", PORT);
+});
