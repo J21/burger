@@ -1,51 +1,49 @@
-//dependencies
-const express = require('express');
-const methodOverride = require('method-override');
-const bodyParser = require('body-parser');
-const router = express.Router();
-const burger = require('../models/burger.js')
+var express = require("express");
+var router = express.Router();
 
-//redirect to burger route by default
-router.get('/', function(req, res) {
-    res.redirect('/burgers');
+// Import the model (burger.js) to use its database functions.
+var burger = require("../models/burger.js");
+
+// Create all our routes and set up logic within those routes where required.
+router.get("/", function(req, res) {
+  burger.all(function(data) {
+    var hbsObject = {
+      burgers: data
+    };
+    console.log(hbsObject);
+    res.render("index", hbsObject);
+  });
 });
 
-//when directed to burgers route, get burger.js logic, call functions within it. 
-router.get('/burgers', function(req, res) {
-    burger.selectAll(function(data) {
-        //when called (it's never called) render response through index.handlebars
-        res.render('index', { burgers: data });
-    });
+router.post("/", function(req, res) {
+  burger.create([
+    "burger_name", "devoured"
+  ], [
+    req.body.burger_name, req.body.devoured
+  ], function() {
+    res.redirect("/");
+  });
 });
 
-//when route is burger/create run function
-router.post('/burgers/create', function(req, res) {
-    //call burger logic insertOne function(column,data,callback);
-    burger.insertOne('burger_name', req.body.name, function() {
-        //redirect to updated main page after insertOne
-        res.redirect('/burgers');
-    })
-})
+router.put("/:id", function(req, res) {
+  var condition = "id = " + req.params.id;
 
-//update route
-router.put('/burgers/update/devour/:id', function(req, res) {
-    //tableName, column, ID, callback
-    burger.updateOne('burgers','devoured', req.params.id, function() {
-        //redirect to home upon response
-        res.redirect('/burgers');
-    })
-})
-//delete method available because method override
-router.delete('/burgers/delete/:id', function(req, res) {
-    //run burger.js logic of deleteOne(table,id,callback)
-    burger.deleteOne('burgers',req.params.id, function() {
-        //upon delete, redirect home
-        res.redirect('/burgers');
-    })
-})
-//initial load/direct
-router.use(function(req, res) {
-    res.redirect('/burgers');
-})
-//export
+  console.log("condition", condition);
+
+  burger.update({
+    devoured: req.body.devoured
+  }, condition, function() {
+    res.redirect("/");
+  });
+});
+
+router.delete("/:id", function(req, res) {
+  var condition = "id = " + req.params.id;
+
+  burger.delete(condition, function() {
+    res.redirect("/");
+  });
+});
+
+// Export routes for server.js to use.
 module.exports = router;
