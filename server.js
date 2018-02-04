@@ -1,28 +1,27 @@
-var express = require("express");
-var bodyParser = require("body-parser");
-var methodOverride = require("method-override");
+//dependencies. Done as const just because I can
+const express = require('express');
+const methodOverride = require('method-override');
+const bodyParser = require('body-parser');
+const app = express();
 
-var port = 3000;
+//serve up public folder and all content as static files to server.
+app.use(express.static('public'));
+//use bodyParser, do not encode url
+app.use(bodyParser.urlencoded({
+	extended: false
+}));
+// override with POST having ?_method=DELETE
+app.use(methodOverride('_method'));
+//require handlebars
+var exphbs = require('express-handlebars');
+//use handlebars engine as template engine, use 'main' as our base file
+app.engine('handlebars', exphbs({
+	defaultLayout: 'main'
+}));
+app.set('view engine', 'handlebars');
 
-var app = express();
-
-// Serve static content for the app from the "public" directory in the application directory.
-app.use(express.static(process.cwd() + "/public"));
-
-app.use(bodyParser.urlencoded({ extended: false }));
-
-// Override with POST having ?_method=DELETE
-app.use(methodOverride("_method"));
-
-// Set Handlebars.
-var exphbs = require("express-handlebars");
-
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
-app.set("view engine", "handlebars");
-
-// Import routes and give the server access to them.
-var routes = require("./controllers/burgers_controller.js");
-
-app.use("/", routes);
+//link to burger controller, set as default page"/"
+var routes = require('./controllers/burger_controller.js');
+app.use('/', routes);
 
 app.listen(process.env.PORT || port);
