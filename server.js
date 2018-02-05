@@ -1,9 +1,10 @@
-//dependencies. Done as const just because I can
+
 const express = require('express');
 const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
 const app = express();
 
+var port = 3000;
 //serve up public folder and all content as static files to server.
 app.use(express.static('public'));
 //use bodyParser, do not encode url
